@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /public/{allPaths=**} {
+    	allow read: if true
+      allow create: if request.auth != null
+      // update & delete rule is not working right now
+    	allow update, delete: if firestore.get(
+    	/databases/(default)/documents/Users/$(request.auth.uid))
+    	.data.uid == request.auth.uid;
+    }
+    match /private/{fileName} {
+      allow read: if request.auth != null && fileName in firestore.get(
+      	/databases/(default)/documents/Users/$(request.auth.uid))
+        .data.purchasedItems;
+      allow create: if request.auth != null
+      // update & delete rule is not working right now
+      allow update, delete: if firestore.get(
+      	/databases/(default)/documents/Users/$(request.auth.uid))
+        .data.uid == request.auth.uid;
+    }
+  }
+}
