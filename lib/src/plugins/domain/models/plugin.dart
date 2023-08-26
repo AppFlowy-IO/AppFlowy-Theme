@@ -10,7 +10,7 @@ class Plugin {
   final String name;
   final double rating;
   final int ratingCount;
-  final DateTime uploadDate;
+  final DateTime? uploadDate;
   final PickedFile? pickedFile;
   final double price;
   final User uploader;
@@ -22,8 +22,8 @@ class Plugin {
     required this.name,
     required this.rating,
     required this.ratingCount,
-    required this.uploadDate,
-    required this.pickedFile,
+    this.uploadDate,
+    this.pickedFile,
     required this.price,
     required this.uploader,
   }) : downloadURL = downloadURL ?? '';
@@ -32,6 +32,7 @@ class Plugin {
     PickedFile? pickedFile,
     required String name,
     required User uploader,
+    DateTime? uploadDate,
     String? downloadURL,
     required double price,
   }) =>
@@ -42,7 +43,6 @@ class Plugin {
         name: name,
         rating: 0,
         ratingCount: 0,
-        uploadDate: DateTime.now(),
         pickedFile: pickedFile,
         price: price,
         uploader: uploader,
@@ -51,32 +51,30 @@ class Plugin {
   Plugin.fromJson(Map<String, dynamic> object)
       : pluginId = object['plugin_id'],
         downloadCount = object['download_count'],
-        downloadURL = object['downloadURL'],
+        downloadURL = object['download_url'],
         name = object['name'],
         rating = object['rating'],
-        ratingCount = object['ratingCount'],
-        uploadDate = object['uploaded_on'],
+        ratingCount = object['rating_count'],
+        uploadDate = DateTime.parse(object['created_at']),
         pickedFile = null,  // pickedFile is always null when receive data from a json request
         price = object['price'],
         uploader = User(
-          uid: object['uploader']['uid'],
-          name: object['uploader']['name'],
-          email: object['uploader']['email'],
+          uid: object['uploader_id'],
+          name: object['uploader_name'],
+          email: object['uploader_email'],
         );
 
   Map<String, dynamic> toJson() => {
-        'plugin_id': pluginId,
-        'download_count': downloadCount,
-        'downloadURL': downloadURL,
-        'name': name,
-        'rating': rating,
-        'ratingCount': ratingCount,
-        'uploaded_on': uploadDate,
-        'price': price,
-        'uploader': {
-          'email': uploader.email,
-          'name': uploader.name,
-          'uid': uploader.uid,
-        },
-      };
+    'plugin_id': pluginId,
+    'download_count': downloadCount,
+    'download_url': downloadURL,
+    'name': name,
+    'rating': rating,
+    'rating_count': ratingCount,
+    if(uploadDate != null) 'created_at': uploadDate.toString(),
+    'price': price,
+    'uploader_id': uploader.uid,
+    'uploader_email': uploader.email,
+    'uploader_name': uploader.name,
+  };
 }

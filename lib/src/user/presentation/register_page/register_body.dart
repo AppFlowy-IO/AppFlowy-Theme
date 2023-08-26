@@ -1,7 +1,7 @@
-import 'package:appflowy_theme_marketplace/src/user/application/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../authentication/application/auth_bloc/auth_bloc.dart';
+import '../../../payment/application/payment_bloc/payment_bloc.dart';
 import '../../../widgets/ui_utils.dart';
 
 class RegisterBody extends StatelessWidget {
@@ -134,14 +134,13 @@ class RegisterBody extends StatelessWidget {
                       const SizedBox(height: UiUtils.sizeM),
                       ElevatedButton(
                         onPressed: () {
-                          BlocProvider.of<AuthBloc>(context).add(SignInRequested(_emailController.text, _passwordController.text));
                           Navigator.of(context).pop();
                         },
                         child: const Text('Go to dashboard'),
                       ),
                       const SizedBox(height: UiUtils.sizeM),
-                      ElevatedButton(
-                        onPressed: () async => BlocProvider.of<UserBloc>(context).add(CreateAccount()),
+                      ElevatedButton( //TODO (a-wallen): migrate to supabase and apply to all  user
+                        onPressed: () async => BlocProvider.of<PaymentBloc>(context).add(CreateOnboardingLinkRequested('acct_1NcwLWBSgTfvRMoQ')),
                         child: const Text('Become A seller'),
                       ),
                       const SizedBox(height: UiUtils.sizeM),

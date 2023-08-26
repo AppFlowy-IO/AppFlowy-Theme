@@ -3,7 +3,7 @@ import 'package:appflowy_theme_marketplace/src/widgets/ui_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
-import './item_card.dart';
+import './item_card/item_card.dart';
 
 class FilesListing extends StatefulWidget {
   const FilesListing({super.key, required this.fetchFunction});

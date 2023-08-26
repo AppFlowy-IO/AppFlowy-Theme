@@ -1,35 +1,12 @@
+import 'package:appflowy_theme_marketplace/src/user/data/firebase_repository/helpers/user_helpers.dart';
 import 'package:appflowy_theme_marketplace/src/user/domain/models/user.dart';
-import 'package:appflowy_theme_marketplace/src/user/domain/repositories/user_repository.dart';
+
+import '../../domain/repositories/user_repository.dart';
 
 class FirebaseUserRepository implements UserRepository {
   @override
-  Future<void> add(User user) {
-    // TODO: implement add
-    throw UnimplementedError();
+  Future<User> get(String id) async {
+    User user = await UserHelper.getUserData(id);
+    return user;
   }
-
-  @override
-  Future<User> byEmail(String email) {
-    // TODO: implement byEmail
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<User> get(String id) {
-    // TODO: implement get
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> update(User user) {
-    // TODO: implement update
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> create(User user) {
-    // TODO: implement create
-    throw UnimplementedError();
-  }
-  
 }

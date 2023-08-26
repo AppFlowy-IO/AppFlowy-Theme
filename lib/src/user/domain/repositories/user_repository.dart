@@ -1,6 +1,5 @@
-import '../models/user.dart';
+import 'package:appflowy_theme_marketplace/src/user/domain/models/user.dart';
 
 abstract class UserRepository {
-  Future<void> get(String id);
-  Future<void> create(User user);
+  Future<User> get(String id);
 }

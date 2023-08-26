@@ -6,9 +6,15 @@ abstract class PaymentEvent extends Equatable{
 }
 
 class CheckOutSessionRequested extends PaymentEvent {
-  CheckOutSessionRequested(this.seller, this.product, this.cutPercentage);
+  CheckOutSessionRequested(this.product, this.customer);
   
-  final User seller;
   final Plugin product;
-  final double cutPercentage;
+  final User customer;
+}
+
+class CreateOnboardingLinkRequested extends PaymentEvent {
+  CreateOnboardingLinkRequested(this.accountId);
+
+  final String accountId;
+  
 }

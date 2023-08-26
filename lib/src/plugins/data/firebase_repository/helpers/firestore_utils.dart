@@ -8,7 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart' as firebase;
 class FireStoreUtils {
   static final firebase.FirebaseFirestore _firestore = firebase.FirebaseFirestore.instance;
   static final firebase.CollectionReference _filesCollectionRef = _firestore.collection('Files');
-  static final firebase.CollectionReference _usersCollectionRef = _firestore.collection('Users');
   
   static Future<void> uploadFileData(Plugin plugin) async {
     final querySnapShot = await _filesCollectionRef.where('name', isEqualTo: plugin.name).get();
@@ -20,8 +19,6 @@ class FireStoreUtils {
   static Future<void> addRating(String docId, Rating rating) async {
     final firebase.DocumentReference ratingsDocumentRef = _filesCollectionRef.doc(docId);
     final firebase.CollectionReference ratingsCollectionRef = ratingsDocumentRef.collection('Ratings');
-    User reviewer = rating.reviewer;
-    print(reviewer.toJson());
     final firebase.QuerySnapshot querySnapshot = await ratingsCollectionRef
       .where('reviewer.email', isEqualTo: rating.reviewer.email)
       .get();

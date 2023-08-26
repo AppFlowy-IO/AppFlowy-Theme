@@ -1,7 +1,6 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:appflowy_theme_marketplace/src/widgets/ui_utils.dart';
 import 'package:equatable/equatable.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:appflowy_theme_marketplace/src/authentication/domain/repositories/authentication_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/models/user.dart';
@@ -29,15 +28,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(const Loading());
         await UiUtils.delayLoading();
         try {
-          final User? firebaseUser = await authenticationRepository.register(
+          final User? registeredUser = await authenticationRepository.register(
             emailAddress: event.email,
             password: event.password,
             name: event.name
           );
-          if(firebaseUser == null)
+          if(registeredUser == null)
             throw Exception('user is null');
-          User? user = User(uid: firebaseUser.uid, email: firebaseUser.email); 
-          await authenticationRepository.sendEmailVerification();
+          User? user = User(uid: registeredUser.uid, email: registeredUser.email); 
           emit(RegistrationSuccess(userData: user));
         } on Exception catch (e) {
           emit(RegistrationFailed(message: e.toString()));
@@ -49,8 +47,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(const Loading());
         await UiUtils.delayLoading();
         try {
-          final firebaseUser = await authenticationRepository.signIn(emailAddress: event.email, password: event.password);
-          User? user = User(uid: firebaseUser!.uid, email: firebaseUser.email);
+          final User? signedInUser = await authenticationRepository.signIn(emailAddress: event.email, password: event.password);
+          late User? user;
+          if(signedInUser == null)
+            throw Exception('user is null');
+          user = User(uid: signedInUser.uid, email: signedInUser.email);
           emit(AuthenticateSuccess(userData: user));
         } on Exception catch (e) {
           emit(AuthenticateFailed(message: e.toString()));

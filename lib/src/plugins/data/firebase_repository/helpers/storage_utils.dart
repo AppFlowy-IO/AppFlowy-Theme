@@ -44,19 +44,6 @@ class StorageUtils {
       if(!validateUploadFile(byteFile))
         throw Exception('Zip does not meet the required format');
 
-      // final storage = FirebaseStorage.instance;
-      // final ListResult listResultPrivate = await storage.ref('private').listAll();
-      // List<Reference> privateList = listResultPrivate.items.where((item) => fileName == item.name).toList();
-      // final ListResult listResultPublic = await storage.ref('public').listAll();
-      // List<Reference> publicList = listResultPublic.items.where((item) => fileName == item.name).toList();
-      
-      // if(privateList.isNotEmpty || publicList.isNotEmpty)
-      //   throw Exception('Exist file with the same name, please use a different name');
- 
-      // final List dupFile = await FireStoreUtils.listFiles(fileName);
-      // if(dupFile.isNotEmpty)
-      //   throw Exception('Exist file with the same name, please use a different name');
-
       String path = price == 0 ? 'public/${user.uid}' : 'private/${user.uid}';
       Reference storageReference = FirebaseStorage.instance.ref(path).child(fileName);
 

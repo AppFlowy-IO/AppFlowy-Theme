@@ -8,3 +8,4 @@ service cloud.firestore {
     }
   }
 }
+// match User document then only allow update if the auth.uid is the same as the doc's uid

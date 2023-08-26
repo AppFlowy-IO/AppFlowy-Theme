@@ -4,14 +4,12 @@ class User {
   final String uid;
   final String? name;
   final String email;
-  final String? stripeId;
   final List purchasedItems;
 
   User({
     required this.uid,
     this.name,
     required this.email,
-    this.stripeId,
     List? purchasedItems,
   }) : purchasedItems = purchasedItems ?? [];
 
@@ -27,14 +25,12 @@ class User {
       : uid = object['uid'] ?? '',
         name = object['name'] ?? '',
         email = object['email'] ?? '',
-        stripeId = object['stripeId'] ?? '',
         purchasedItems = object['purchasedItems'] ?? [];
 
   Map<String, dynamic> toJson() => {
         'uid': uid,
         'name': name ?? '',
         'email': email,
-        'stripeId': stripeId ?? '',
         'purchasedItems': purchasedItems,
       };
 }

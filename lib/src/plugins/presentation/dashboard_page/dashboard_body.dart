@@ -2,7 +2,7 @@ import 'package:appflowy_theme_marketplace/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/files_listing.dart';
-import '../widgets/item_card.dart';
+import '../widgets/item_card/item_card.dart';
 import '../widgets/list_category_text.dart';
 import '../../application/plugin/plugin_bloc.dart';
 import '../../application/search/plugin_search_bloc.dart';
@@ -69,7 +69,6 @@ class _DashboardBodyState extends State<DashboardBody> {
                       children: files,
                     );
                   }
-
                   else if (state is SearchFailed)
                     return const Text('error');
                   else

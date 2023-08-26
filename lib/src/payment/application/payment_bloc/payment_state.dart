@@ -36,5 +36,4 @@ class CheckoutFailed extends PaymentState {
 
   @override
   List<Object?> get props => [message];
-
 }

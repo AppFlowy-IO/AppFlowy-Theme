@@ -24,7 +24,6 @@ class UserFactory {
       uid: user.uid,
       name: user.name ?? 'Unknown',
       email: user.email ?? 'Unknown',
-      stripeId: 'acct_1NcwEqBOBzdf6ybL',
       purchasedItems: [],
     );
   }

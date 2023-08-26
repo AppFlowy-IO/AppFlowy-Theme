@@ -1,5 +1,4 @@
-import 'dart:html';
-
+import 'dart:html' as html;
 import 'package:appflowy_theme_marketplace/src/payment/domain/models/plugin.dart';
 import 'package:appflowy_theme_marketplace/src/payment/domain/repositories/payment_repository.dart';
 import 'package:equatable/equatable.dart';
@@ -25,17 +24,26 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         emit(const CreatingCheckoutSession());
         await UiUtils.delayLoading();
         try {
-          // paymentRepository
-          print('creating session...');
-          final res = await paymentRepository.createInvoice(event.seller.stripeId!, event.product.price, event.cutPercentage);
-          print(res);
-          // print(event.product);
-          // print(event.seller);
-          // print(event.cutPercentage);
-          // print('checkout completed');
+          final res = await paymentRepository.createInvoice(event.product, event.customer);
+          html.window.location.assign(res['url']);
           emit(const CheckoutSessionCreated());
         } on Exception catch (e) {
-          print('checkout failed: $e');
+          emit(CheckoutFailed(message: e.toString()));
+        }
+      },
+    );
+    on<CreateOnboardingLinkRequested>(
+      (
+        CreateOnboardingLinkRequested event,
+        Emitter<PaymentState> emit,
+      ) async {
+        emit(const CreatingCheckoutSession());
+        await UiUtils.delayLoading();
+        try {
+          final res = await paymentRepository.createAccountLink(event.accountId);
+          html.window.location.assign(res['url']);
+          emit(const CheckoutSessionCreated());
+        } on Exception catch (e) {
           emit(CheckoutFailed(message: e.toString()));
         }
       },

@@ -78,4 +78,8 @@ class UiUtils {
   static Future<void> delayLoading([int milliseconds = 300]) async {
     await Future.delayed(Duration(milliseconds: milliseconds), () {});
   }
+
+  static String defaultUsername(String email) {
+    return email.split('@')[0];
+  }
 }

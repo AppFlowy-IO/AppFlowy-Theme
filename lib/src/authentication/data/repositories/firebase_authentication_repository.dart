@@ -5,24 +5,24 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import '../../domain/models/user.dart';
 
 class FirebaseAuthenticationRepository implements AuthenticationRepository {
-  FirebaseAuthenticationRepository();
   firebase.User? currentUser;
   @override
   Future<User?> register({required String emailAddress, required String password, String? name}) async {
     try {
-      firebase.UserCredential credential = await firebase.FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final firebase.UserCredential credential = await firebase.FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailAddress,
         password: password,
       );
-      firebase.User? firebaseUser = credential.user;
+      final firebase.User? firebaseUser = credential.user;
       late User uploader;
       if (firebaseUser != null) {
         await firebaseUser.updateDisplayName(name);
         uploader = User(uid: firebaseUser.uid, name: name, email: firebaseUser.email);
         // await userRepository.add(uploader); //create account from stripe and add to db
         currentUser = firebaseUser;
-      } else
+      } else {
         throw Exception('There is no user data');
+      }
       return uploader;
     } on firebase.FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -43,7 +43,7 @@ class FirebaseAuthenticationRepository implements AuthenticationRepository {
           await firebase.FirebaseAuth.instance
           .signInWithEmailAndPassword(email: emailAddress, password: password);
       final firebaseUser = credential.user;
-      User? user = User(uid: firebaseUser!.uid, email: firebaseUser.email);
+      final User user = User(uid: firebaseUser!.uid, email: firebaseUser.email);
       return user;
     } on firebase.FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found' || e.code == 'wrong-password') {
@@ -75,15 +75,15 @@ class FirebaseAuthenticationRepository implements AuthenticationRepository {
 
   @override
   Stream<User?> authStateChanges() {
-    return firebase.FirebaseAuth.instance.authStateChanges().map((firebaseUser) {
-      if(firebaseUser == null)
-        return null;
-      User user = User(
-        email: firebaseUser.email,
-        uid: firebaseUser.uid,
-        name: firebaseUser.displayName,
-      );
-      return user;
+    return firebase.FirebaseAuth.instance.authStateChanges().map(
+      (firebaseUser) {
+        if (firebaseUser == null) return null;
+        User user = User(
+          email: firebaseUser.email,
+          uid: firebaseUser.uid,
+          name: firebaseUser.displayName,
+        );
+        return user;
       },
     );
   }

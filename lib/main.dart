@@ -1,46 +1,54 @@
-import 'package:appflowy_theme_marketplace/firebase_options.dart';
-import 'package:appflowy_theme_marketplace/src/authentication/data/repositories/firebase_authentication_repository.dart';
 import 'package:appflowy_theme_marketplace/src/payment/application/payment_bloc/payment_bloc.dart';
 import 'package:appflowy_theme_marketplace/src/payment/data/repositories/stripe_payment_repository.dart';
 import 'package:appflowy_theme_marketplace/src/plugins/domain/repositories/plugin_repository.dart';
 import 'package:appflowy_theme_marketplace/src/plugins/domain/repositories/ratings_repository.dart';
-import 'package:appflowy_theme_marketplace/src/user/application/bloc/user_bloc.dart';
-import 'package:appflowy_theme_marketplace/src/user/data/firebase_repository/firebase_user_repository.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:appflowy_theme_marketplace/src/user/application/bloc/user_bloc/user_bloc.dart';
+import 'package:appflowy_theme_marketplace/src/user/presentation/orders_page/orders.dart';
+import 'package:appflowy_theme_marketplace/src/user/presentation/user_page/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'src/authentication/application/auth_bloc/auth_bloc.dart';
+import 'src/authentication/domain/repositories/authentication_repository.dart';
 import 'src/authentication/presentation/signin_page/signin.dart';
 import 'src/plugins/application/plugin/plugin_bloc.dart';
-import 'src/plugins/data/firebase_repository/firebase_plugin_repository.dart';
-import 'src/plugins/data/firebase_repository/firebase_rating_repository.dart';
 import 'src/plugins/presentation/dashboard_page/dashboard.dart';
+import 'src/serverless_api/supabase_api.dart';
+import 'src/user/application/bloc/orders_bloc/orders_bloc.dart';
+import 'src/plugins/data/supabase_repository/supabase_plugin_repository.dart';
+import 'src/authentication/data/repositories/supabase_authentication_repository.dart';
+import 'src/plugins/data/supabase_repository/supabase_rating_repository.dart';
+import 'src/user/data/supabase_repository/supabase_orders_repository.dart';
+import 'src/user/data/supabase_repository/supabase_user_repository.dart';
+import 'src/user/domain/repositories/orders_repository.dart';
 import 'src/user/domain/repositories/user_repository.dart';
 import 'src/user/presentation/register_page/register.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> main() async {
-  getIt.registerSingleton<PluginRepository>(FirebasePluginRepository());
-  getIt.registerSingleton<RatingsRepository>(FirebaseRatingsRepository());
-  getIt.registerSingleton<UserRepository>(FirebaseUserRepository());
-  getIt.registerSingleton<FirebaseAuthenticationRepository>(FirebaseAuthenticationRepository());
-  getIt.registerSingleton<StripePaymentRepository>(StripePaymentRepository());
-
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  await dotenv.load(fileName: '.env');
+  await Supabase.initialize(
+    url: SupabaseApi.supabaseUrl,
+    anonKey: dotenv.env['ANON_KEY'] as String,
   );
+  getIt.registerSingleton<PluginRepository>(SupabasePluginRepository());
+  getIt.registerSingleton<RatingsRepository>(SupabaseRatingsRepository());
+  getIt.registerSingleton<UserRepository>(SupabaseUserRepository());
+  getIt.registerSingleton<OrdersRepository>(SupabaseOrdersRepository());
+  getIt.registerSingleton<AuthenticationRepository>(SupabaseAuthenticationRepository());
+  getIt.registerSingleton<StripePaymentRepository>(StripePaymentRepository());
 
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
           create: (BuildContext context) => AuthBloc(
-            authenticationRepository:
-                getIt.get<FirebaseAuthenticationRepository>(),
+            authenticationRepository: getIt.get<AuthenticationRepository>(),
           ),
         ),
         BlocProvider<PluginBloc>(
@@ -52,6 +60,11 @@ Future<void> main() async {
         BlocProvider<UserBloc>(
           create: (BuildContext context) => UserBloc(
             userRepository: getIt.get<UserRepository>(),
+          ),
+        ),
+        BlocProvider<OrdersBloc>(
+          create: (BuildContext context) => OrdersBloc(
+            ordersRepository: getIt.get<OrdersRepository>(),
           ),
         ),
         BlocProvider<PaymentBloc>(
@@ -74,20 +87,9 @@ Future<void> main() async {
           '/': (context) => const Dashboard(),
           '/signin': (context) => const SignIn(),
           '/register': (context) => const Register(),
+          '/user': (context) => const UserInfo(),
+          '/orders': (context) => const Orders(),
         },
-        // onGenerateRoute: (RouteSettings settings) {
-        //   final uri = Uri.parse(settings.name!);
-        //   final path = uri.path;
-        //   if(path == '/'){
-        //     return MaterialPageRoute(builder: (_) => const Dashboard());
-        //   }
-        //   else if(path == '/signin'){
-        //     return MaterialPageRoute(builder: (_) => const SignIn());
-        //   }
-        //   else{
-        //     return MaterialPageRoute(builder: (_) => const EmptyRoute());
-        //   }
-        // },
         scrollBehavior: MyCustomScrollBehavior(),
       ),
     ),

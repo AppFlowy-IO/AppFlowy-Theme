@@ -28,6 +28,15 @@ class AddRatingDataRequested extends PluginEvent {
   List<Object> get props => [];
 }
 
+class IncrementDownloadCountRequested extends PluginEvent {
+  const IncrementDownloadCountRequested(this.plugin);
+
+  final Plugin plugin;
+
+  @override
+  List<Object> get props => [];
+}
+
 class ResetStateRequested extends PluginEvent {
   @override
   List<Object> get props => [];

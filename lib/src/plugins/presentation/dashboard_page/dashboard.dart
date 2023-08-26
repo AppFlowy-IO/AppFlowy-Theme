@@ -1,10 +1,13 @@
+import 'package:appflowy_theme_marketplace/main.dart';
+import 'package:appflowy_theme_marketplace/src/plugins/application/factories/user_factory.dart';
+import 'package:appflowy_theme_marketplace/src/plugins/presentation/widgets/user_dropdown/user_dropdown.dart';
 import 'package:appflowy_theme_marketplace/src/widgets/ui_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../authentication/application/auth_bloc/auth_bloc.dart';
 import '../../application/search/plugin_search_bloc.dart';
-import '../../data/firebase_repository/firebase_plugin_repository.dart';
-import '../widgets/upload_btn.dart';
+import '../../domain/repositories/plugin_repository.dart';
+import '../widgets/upload_btn/upload_btn.dart';
 import '../widgets/search_input.dart';
 import 'dashboard_body.dart';
 
@@ -15,9 +18,8 @@ class Dashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size.width;
     String appTitle = screenSize > 800 ? 'Appflowy Marketplace' : '';
-    FirebasePluginRepository firebasePluginRepo = FirebasePluginRepository();
     return BlocProvider<PluginSearchBloc>(
-      create: (BuildContext context) => PluginSearchBloc(pluginRepository: firebasePluginRepo),
+      create: (BuildContext context) => PluginSearchBloc(pluginRepository: getIt.get<PluginRepository>()),
       child: Scaffold(
         appBar: AppBar(
           leading: null,
@@ -49,15 +51,22 @@ class Dashboard extends StatelessWidget {
                       onPressed: () => {},
                       child: const CircularProgressIndicator(),
                     );
-                  } else if (state is UnAuthenticated) {
+                  }
+                  else if (state is UnAuthenticated || state is RegistrationSuccess) {
                     return TextButton(
                       onPressed: () => Navigator.pushNamed(context, '/signin'),
                       child: const Text('Signin'),
                     );
                   } else if (state is AuthenticateSuccess) {
-                    return TextButton(
-                      onPressed: () => context.read<AuthBloc>().add(SignOutRequested()),
-                      child: const Text('Signout'),
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 0,
+                      ),
+                      width: 100,
+                      child: UserDropDown(
+                        user: UserFactory.fromAuth(state.user!),
+                      ),
                     );
                   } else {
                     return const Text('Error');

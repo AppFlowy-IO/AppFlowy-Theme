@@ -38,14 +38,19 @@ class PluginBloc extends Bloc<PluginEvent, PluginState> {
     });
     on<AddRatingDataRequested>((AddRatingDataRequested event, Emitter<PluginState> emit) async {
       emit(PluginLoading());
-      print('adding rating...');
       try {
         await ratingsRepository.add(event.pluginId, event.rating);
-        print('adding success: ${event.rating.toJson()}');
         emit(PluginUpdated());
       } on Exception catch (e) {
-        print('failed to add rating');
+        debugPrint(e.toString());
         emit(PluginFailed(message: e.toString()));
+      }
+    });
+    on<IncrementDownloadCountRequested>((IncrementDownloadCountRequested event, Emitter<PluginState> emit) async {
+      try {
+        await pluginRepository.update(event.plugin);
+      } on Exception catch (e) {
+        debugPrint(e.toString());
       }
     });
     on<ResetStateRequested>(
