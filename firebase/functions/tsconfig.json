@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "outDir": "lib",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2017",
+    "resolveJsonModule": true,               // json imports
+    "esModuleInterop": true,                 // import common modules as ES6 Modules
+    "allowSyntheticDefaultImports": true,    // support typesystem compatibility
+  },
+  "compileOnSave": true,
+  "include": [
+    "src"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "806787763701",
+    "project_id": "appflowy-theme-marketpla-e8f9b",
+    "storage_bucket": "appflowy-theme-marketpla-e8f9b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:806787763701:android:f76512fc89190c049664bc",
+        "android_client_info": {
+          "package_name": "com.example.appflowy_theme_marketplace"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "806787763701-g933og69ppi6563pr3ip49tf13d6ugfn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBl0hcWFhkmFgv9gP-ogjVgp8LhNvsizyc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "806787763701-9ld69u6mt1hg2guudh6h8i7q0205duc6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "806787763701-en62uhjnm7lr09j09u49lg9d70hfkl6l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.appflowyThemeMarketplace"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
