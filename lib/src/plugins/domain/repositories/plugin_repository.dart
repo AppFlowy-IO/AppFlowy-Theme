@@ -8,6 +8,7 @@ abstract class PluginRepository {
   Future<List<Plugin>> byDate([bool descending = true]);
   Future<Plugin> get(String id);
   Future<void> add(Plugin plugin);
+  Future<void> updateDonloadCount(Plugin plugin);
   Future<void> update(Plugin plugin);
   Future<void> delete(Plugin plugin);
 }

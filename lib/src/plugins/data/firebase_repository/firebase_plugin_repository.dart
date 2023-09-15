@@ -21,7 +21,6 @@ class FirebasePluginRepository implements PluginRepository {
         email: fileMap['uploader']['email'] ?? 'Unknown',
         name: fileMap['uploader']['name'] ?? 'Unknown',
       );
-      // final Plugin zipFile = Plugin.upload(name: fileMap['name'], uploader: uploader, downloadURL: fileMap['downloadURL']);
       final DateTime time = fileMap['uploaded_on'].toDate();
       final Plugin zipFile = Plugin(
         pluginId: fileMap['plugin_id'],
@@ -42,17 +41,15 @@ class FirebasePluginRepository implements PluginRepository {
 
   @override
   Future<void> add(Plugin plugin) async {
-    if(plugin.pickedFile == null)
+    if (plugin.pickedFile == null)
       throw Exception('no file is picked');
     await StorageUtils.uploadFile(plugin.pickedFile!.bytes, plugin.name, plugin.uploader, plugin.price);
   }
 
   @override
-  // TODO: implement delete
   Future<void> delete(Plugin plugin) => throw UnimplementedError();
 
   @override
-  // TODO: implement get
   Future<Plugin> get(String id) => throw UnimplementedError();
 
   @override
@@ -62,7 +59,6 @@ class FirebasePluginRepository implements PluginRepository {
   }
 
   @override
-  // TODO: implement update
   Future<Plugin> update(Plugin plugin) => throw UnimplementedError();
 
   @override
@@ -87,5 +83,15 @@ class FirebasePluginRepository implements PluginRepository {
   Future<List<Plugin>> byRatings([bool ascending = true]) async {
     final list = await FireStoreUtils.listFilesByRatings();
     return toPlugin(list);
+  }
+  
+  @override
+  Future<void> upload(Plugin plugin) {
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> updateDonloadCount(Plugin plugin) {
+    throw UnimplementedError();
   }
 }

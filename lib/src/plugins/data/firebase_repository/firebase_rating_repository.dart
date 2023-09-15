@@ -5,26 +5,27 @@ import 'helpers/firestore_utils.dart';
 
 class FirebaseRatingsRepository implements RatingsRepository {
   @override
-  Future<void> add(String pluginId, Rating rating) async {
-    await FireStoreUtils.addRating(pluginId, rating);
+  Future<List<Rating>> getAll(String uid) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> add(Rating rating) async {
+    await FireStoreUtils.addRating(rating);
   }
 
   @override
   Future<double> average(String ratingDocId) async {
-    // TODO: implement average
     throw UnimplementedError();
   }
 
   @override
   Future<int> count(String ratingDocId) async {
-    // TODO: implement count
     throw UnimplementedError();
   }
 
   @override
   Future<void> update(Rating rating) async {
-    // TODO: implement update
     throw UnimplementedError();
   }
-
 }

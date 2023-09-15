@@ -1,4 +1,4 @@
-import 'package:appflowy_theme_marketplace/src/plugins/domain/models/pickedFile.dart';
+import 'package:appflowy_theme_marketplace/src/plugins/domain/models/picked_file.dart';
 import 'package:uuid/uuid.dart';
 
 import 'user.dart';
@@ -71,7 +71,7 @@ class Plugin {
     'name': name,
     'rating': rating,
     'rating_count': ratingCount,
-    if(uploadDate != null) 'created_at': uploadDate.toString(),
+    if (uploadDate != null) 'created_at': uploadDate.toString(),
     'price': price,
     'uploader_id': uploader.uid,
     'uploader_email': uploader.email,

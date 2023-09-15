@@ -1,3 +1,5 @@
+import './widgets/password_recovery_form.dart';
+import 'package:appflowy_theme_marketplace/src/widgets/popup_dialog.dart';
 import 'package:appflowy_theme_marketplace/src/widgets/ui_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -93,8 +95,8 @@ class _SigninBodyState extends State<SigninBody> {
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton(
-                            onPressed: () => context.read<AuthBloc>().add(SignInRequested(_emailAddress, _password)),
-                            child: const Text('Sign in')),
+                          onPressed: () => context.read<AuthBloc>().add(SignInRequested(_emailAddress, _password)),
+                          child: const Text('Sign in')),
                       ),
                     ],
                   );
@@ -115,7 +117,34 @@ class _SigninBodyState extends State<SigninBody> {
                     ),
                   ),
                   const Spacer(),
-                  const Text('Forgot password?'),
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return PopupDialog(
+                            content: const PasswordRecoveryForm(),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Close'),
+                              ),
+
+                            ],
+                            title: const Text('Account Recovery'),
+                          );
+                        },
+                      );
+                    },
+                    child: const Text(
+                      'Forgot password?',
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: UiUtils.blue,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),

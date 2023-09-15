@@ -7,8 +7,8 @@ abstract class UserEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class UserDataRequested extends UserEvent {
-  const UserDataRequested(this.uid);
+class GetAndUpdateUserDataRequested extends UserEvent {
+  const GetAndUpdateUserDataRequested(this.uid);
 
   final String uid;
 

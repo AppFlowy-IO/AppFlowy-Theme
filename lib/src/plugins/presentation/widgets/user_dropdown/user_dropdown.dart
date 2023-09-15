@@ -1,9 +1,8 @@
 import 'package:appflowy_theme_marketplace/src/authentication/application/auth_bloc/auth_bloc.dart';
+import 'package:appflowy_theme_marketplace/src/plugins/presentation/widgets/user_dropdown/popup_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../user/application/bloc/orders_bloc/orders_bloc.dart';
-import '../../../../user/application/bloc/user_bloc/user_bloc.dart';
+import '../../../../widgets/ui_utils.dart';
 import '../../../domain/models/user.dart';
 
 class UserDropDown extends StatefulWidget {
@@ -16,91 +15,118 @@ class UserDropDown extends StatefulWidget {
 }
 
 class _UserDropDownState extends State<UserDropDown> {
-  String? _selectedOption;
+  String? username;
+
   @override
   void initState() {
     super.initState();
   }
 
+  String truncateText(String value, int maxLength) {
+    if (value.length > maxLength) {
+      value = '${value.substring(0, maxLength - 3)}...';
+    }
+    return value;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final String userEmail = widget.user.email ?? 'Guest';
-    final username = userEmail.split('@')[0];
-    List<DropdownMenuItem<String>> options = [
-      DropdownMenuItem(
-        value: 'User',
-        child: Text(
-          username,
-          style: const TextStyle(color: Colors.white),
+    final String userEmail = widget.user.email ?? UiUtils.defaultEmail;
+    final username = widget.user.name ?? UiUtils.defaultUsername(userEmail);
+    final maxLength = widget.user.uid.length;
+    final userInfo = SelectionArea(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: UiUtils.sizeM),
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              truncateText(userEmail, maxLength),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: UiUtils.sizeM,
+              ),
+            ),
+            const SizedBox(height: UiUtils.sizeXS),
+            Text(
+              truncateText(username, maxLength),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: UiUtils.sizeM,
+              ),
+            ),
+            const SizedBox(height: UiUtils.sizeXS),
+            Text(
+              widget.user.uid,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: UiUtils.sizeM,
+              ),
+            ),
+            Divider(
+              height: UiUtils.sizeXXL,
+              color: Colors.grey[400],
+            ),
+          ],
         ),
       ),
-      const DropdownMenuItem(
-        value: 'Ratings',
-        child: Text(
-          'Ratings',
-          style: TextStyle(color: Colors.white),
-        ),
+    );
+
+    final PopupMenuItem<String> userHeader = PopupMenuItem(
+      value: 'user',
+      enabled: false,
+      child: userInfo,
+    );
+
+    List<PopupMenuItem<String>> options = [
+      userHeader,
+      const PopupMenuItem(
+        value: '/user/plugins',
+        child: PopupText(text: 'Manage Plugin'),
       ),
-      const DropdownMenuItem(
-        value: 'Orders',
-        child: Text(
-          'Orders',
-          style: TextStyle(color: Colors.white),
-        ),
+      const PopupMenuItem(
+        value: '/ratings',
+        child: PopupText(text: 'Ratings'),
       ),
-      const DropdownMenuItem(
-        value: 'Profile',
-        child: Text(
-          'Profile',
-          style: TextStyle(color: Colors.white),
-        ),
+      const PopupMenuItem(
+        value: '/orders',
+        child: PopupText(text: 'Orders'),
       ),
-      const DropdownMenuItem(
-        value: 'Signout',
-        child: Text(
-          'Signout',
-          style: TextStyle(color: Colors.white),
-        ),
+      const PopupMenuItem(
+        value: 'signout',
+        child: PopupText(text: 'Signout'),
       ),
     ];
-    _selectedOption = options[0].value;
-
-    final userStatus = context.read<AuthBloc>().state;
-    return DropdownButton<String>(
-      value: 'User',
-      elevation: 16,
-      style: const TextStyle(color:Colors.black54),
-      icon: null,
-      
-      underline: Container(
-        height: 1,
-        color: Colors.transparent,
-      ),
-      onChanged: (String? value) {
-        switch (value) {
-          case 'Ratings':
-            {
-            }
-            break;
-          case 'Orders':
-            {
-              Navigator.pushNamed(context, '/orders');
-            }
-            break;
-          case 'Profile':
-            {
-              Navigator.pushNamed(context, '/user');
-            }
-            break;
-          case 'Signout':
-            {
+    return PopupMenuButton(
+      itemBuilder: (context) => options,
+      tooltip: 'Show User Menu',
+      splashRadius: UiUtils.sizeXL,
+      padding: const EdgeInsets.all(0),
+      onSelected: (value) {
+        final curRoute = ModalRoute.of(context)?.settings.name;
+        if (value != curRoute) {
+          switch (value) {
+            case '/ratings':
+              Navigator.pushNamed(context, value);
+              break;
+            case '/orders':
+              Navigator.pushNamed(context, value);
+              break;
+            case '/user/plugins':
+              Navigator.pushNamed(context, value);
+              break;
+            case 'signout':
               BlocProvider.of<AuthBloc>(context).add(SignOutRequested());
-            }
-            break;
+              Navigator.pushNamed(context, '/');
+              break;
+          }
         }
-        _selectedOption = value;
       },
-      items: options,
+      icon: Icon(
+        Icons.account_circle_sharp,
+        color: Colors.grey[300],
+      ),
     );
   }
 }

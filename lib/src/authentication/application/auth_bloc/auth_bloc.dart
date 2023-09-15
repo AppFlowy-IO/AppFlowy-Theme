@@ -1,8 +1,8 @@
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:appflowy_theme_marketplace/src/widgets/ui_utils.dart';
 import 'package:equatable/equatable.dart';
 import 'package:appflowy_theme_marketplace/src/authentication/domain/repositories/authentication_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../domain/models/user.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -28,12 +28,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(const Loading());
         await UiUtils.delayLoading();
         try {
+          final key = dotenv.env['ANON_KEY'] as String;
           final User? registeredUser = await authenticationRepository.register(
             emailAddress: event.email,
             password: event.password,
-            name: event.name
+            name: event.name,
+            key: key,
           );
-          if(registeredUser == null)
+          if (registeredUser == null)
             throw Exception('user is null');
           User? user = User(uid: registeredUser.uid, email: registeredUser.email); 
           emit(RegistrationSuccess(userData: user));
@@ -49,8 +51,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         try {
           final User? signedInUser = await authenticationRepository.signIn(emailAddress: event.email, password: event.password);
           late User? user;
-          if(signedInUser == null)
+          if (signedInUser == null) {
             throw Exception('user is null');
+          }
           user = User(uid: signedInUser.uid, email: signedInUser.email);
           emit(AuthenticateSuccess(userData: user));
         } on Exception catch (e) {
@@ -81,13 +84,36 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
       },
     );
+    on<ResetAuthStateRequested>(
+      (ResetAuthStateRequested event, Emitter<AuthState> emit) async {
+        emit(const Loading());
+        await UiUtils.delayLoading();
+        try {
+          emit(const UnAuthenticated());
+        } on Exception catch (e) {
+          emit(AuthenticateFailed(message: e.toString()));
+        }
+      },
+    );
     on<VerifyEmailRequested>(
       (VerifyEmailRequested event, Emitter<AuthState> emit) async {
         emit(const SendingEmail());
         await UiUtils.delayLoading();
         try {
           await authenticationRepository.sendEmailVerification();
-          emit(const VerificationEmailSent());
+          emit(const EmailSent());
+        } on Exception catch (e) {
+          emit(AuthenticateFailed(message: e.toString()));
+        }
+      },
+    );
+    on<RecoverEmailRequested>(
+      (RecoverEmailRequested event, Emitter<AuthState> emit) async {
+        emit(const SendingEmail());
+        await UiUtils.delayLoading();
+        try {
+          await authenticationRepository.sendRecoveryEmail(event.email);
+          emit(const EmailSent());
         } on Exception catch (e) {
           emit(AuthenticateFailed(message: e.toString()));
         }

@@ -19,10 +19,29 @@ class UploadDataRequested extends PluginEvent {
 }
 
 class AddRatingDataRequested extends PluginEvent {
-  const AddRatingDataRequested(this.pluginId, this.rating);
+  const AddRatingDataRequested(this.rating);
 
-  final String pluginId;
   final Rating rating;
+
+  @override
+  List<Object> get props => [];
+}
+
+class UpdatePluginRequested extends PluginEvent {
+  const UpdatePluginRequested({required this.user, required this.plugin, required this.price});
+
+  final User user;
+  final PickedFile plugin;
+  final double price;
+
+  @override
+  List<Object> get props => [];
+}
+
+class DeletePluginRequested extends PluginEvent {
+  const DeletePluginRequested(this.plugin);
+
+  final Plugin plugin;
 
   @override
   List<Object> get props => [];

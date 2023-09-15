@@ -3,6 +3,8 @@ import 'package:appflowy_theme_marketplace/src/plugins/application/search/plugin
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../widgets/ui_utils.dart';
+
 
 class SearchInput extends StatefulWidget {
   const SearchInput({super.key});
@@ -39,7 +41,7 @@ class _SearchInputState extends State<SearchInput> {
                 contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Colors.transparent,
+                    color: UiUtils.transparent,
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.only(
@@ -66,7 +68,6 @@ class _SearchInputState extends State<SearchInput> {
               ),
               onChanged: (value) {
                 _onSearchTermChanged(value);
-                // context.read<SearchFilesBloc>().add(SearchFilesRequested(value));
               },
             ),
           ),
@@ -86,16 +87,7 @@ class _SearchInputState extends State<SearchInput> {
                 ),
               ),
             ),
-            onPressed: () {
-              // String searchUrl = '/results?search_query=${Uri.encodeComponent(_searchTerm!)}';
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => SearchResult(searchQuery: _searchTerm),
-              //     settings: RouteSettings(name: searchUrl),
-              //   ),
-              // );
-            },
+            onPressed: () {},
             child: const Icon(Icons.search),
           ),
         ],

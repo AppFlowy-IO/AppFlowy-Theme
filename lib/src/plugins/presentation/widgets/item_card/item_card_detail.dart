@@ -1,3 +1,4 @@
+import 'package:appflowy_theme_marketplace/src/widgets/popup_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -51,30 +52,32 @@ class _ItemCardDetailsState extends State<ItemCardDetails> {
       }
     }).toList();
 
-    return AlertDialog(
+    return PopupDialog(
       title: Row(
         children: [
           const Text('File details'),
           const Spacer(),
           IconButton(
-            splashColor: Colors.transparent,
+            splashColor: UiUtils.transparent,
+            splashRadius: UiUtils.sizeL,
             icon: const Icon(Icons.close),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
       ),
       content: Container(
-          width: MediaQuery.of(context).size.width * (1 / 3),
-          height: MediaQuery.of(context).size.height * (2 / 3),
-          color: Colors.grey[800],
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            controller: null,
-            itemCount: fileContent.length,
-            itemBuilder: (BuildContext context, int index) {
-              return fileContent[index];
-            },
-          )),
+        width: MediaQuery.of(context).size.width * (1 / 3),
+        height: MediaQuery.of(context).size.height * (2 / 3),
+        color: Colors.grey[800],
+        child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          controller: null,
+          itemCount: fileContent.length,
+          itemBuilder: (BuildContext context, int index) {
+            return fileContent[index];
+          },
+        ),
+      ),
       actions: const [],
     );
   }

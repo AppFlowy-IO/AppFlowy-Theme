@@ -37,12 +37,12 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         CreateOnboardingLinkRequested event,
         Emitter<PaymentState> emit,
       ) async {
-        emit(const CreatingCheckoutSession());
+        emit(const CreatingOnboardingSession());
         await UiUtils.delayLoading();
         try {
           final res = await paymentRepository.createAccountLink(event.accountId);
           html.window.location.assign(res['url']);
-          emit(const CheckoutSessionCreated());
+          emit(const OnboardingSessionCreated());
         } on Exception catch (e) {
           emit(CheckoutFailed(message: e.toString()));
         }

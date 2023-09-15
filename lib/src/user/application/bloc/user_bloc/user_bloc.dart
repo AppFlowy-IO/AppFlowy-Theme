@@ -1,8 +1,6 @@
 import 'package:appflowy_theme_marketplace/src/user/domain/repositories/user_repository.dart';
-import 'package:appflowy_theme_marketplace/src/widgets/ui_utils.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-
 import '../../../domain/models/user.dart';
 
 part 'user_event.dart';
@@ -13,14 +11,28 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   UserBloc({
     required this.userRepository,
   }) : super(UserInitial()) {
-    on<UserDataRequested>((event, emit) async {
+    on<GetAndUpdateUserDataRequested>((event, emit) async {
       emit(UserLoading());
-      await UiUtils.delayLoading();
       try {
         User user = await userRepository.get(event.uid);
+        bool onboardCompleted = user.onboardCompleted;
+        String? stripeId = user.stripeId;
+        if (stripeId == null || stripeId.isEmpty) {
+          stripeId = await userRepository.add(user.email);
+        }
+          
+        if (stripeId == null || stripeId.isEmpty) {
+          throw Exception('Could not get stripe id from user');
+        }
+          
+        if (!onboardCompleted) {
+          await userRepository.update(stripeId);
+        }
+          
+        user = await userRepository.get(event.uid);
         emit(UserLoaded(user));
       } on Exception catch (e) {
-        emit(UserLoadFailed(message: e));
+        emit(UserLoadFailed(message: e.toString()));
       }
     });
   }

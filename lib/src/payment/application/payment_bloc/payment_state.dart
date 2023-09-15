@@ -28,9 +28,21 @@ class CheckoutSessionCreated extends PaymentState {
   List<Object?> get props => [];
 }
 
+class CreatingOnboardingSession extends PaymentState {
+  const CreatingOnboardingSession();
+
+  @override
+  List<Object?> get props => [];
+}
+class OnboardingSessionCreated extends PaymentState {
+  const OnboardingSessionCreated();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class CheckoutFailed extends PaymentState {
-  CheckoutFailed({message})
-      : message = message.replaceAll('Exception: ', '');
+  const CheckoutFailed({required this.message});
 
   final String message;
 

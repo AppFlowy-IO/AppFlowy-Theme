@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../widgets/ui_utils.dart';
 import './upload_btn_modal.dart';
 
 class UploadButton extends StatefulWidget {
@@ -17,7 +18,7 @@ class _UploadButtonState extends State<UploadButton> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      splashColor: Colors.transparent,
+      splashColor: UiUtils.transparent,
       onPressed: () =>
           showDialog<String>(context: context, builder: (BuildContext context) => const UploadButtonModal()),
       child: const Icon(Icons.upload),

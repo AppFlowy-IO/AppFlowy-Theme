@@ -8,12 +8,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import '../../../widgets/error_dialog.dart';
+import '../../../widgets/popup_dialog.dart';
 import '../../../widgets/snackbar_status.dart';
+import '../../domain/models/plugin.dart';
 import '../../domain/models/rating.dart';
 
 class RatingForm extends StatefulWidget {
-  const RatingForm(this.docId, this.rating, {super.key});
-  final String docId;
+  const RatingForm(this.plugin, this.rating, {super.key});
+  final Plugin plugin;
   final double rating;
 
   @override
@@ -40,10 +42,10 @@ class _RatingFormState extends State<RatingForm> {
     final maxLines = (dialogHeight / lineHeight).floor();
 
     if (userStatus is AuthenticateSuccess) {
-      if(userStatus.user == null)
+      if (userStatus.user == null)
         throw Exception('user is undefined');
       final User reviewer = UserFactory.fromAuth(userStatus.user!);
-      return AlertDialog(
+      return PopupDialog(
         title: const Text('Rating'),
         content: SizedBox(
           width: dialogWidth,
@@ -156,13 +158,15 @@ class _RatingFormState extends State<RatingForm> {
                   rating: rating,
                   review: review,
                   reviewer: reviewer,
+                  pluginId: widget.plugin.pluginId,
+                  pluginName: widget.plugin.name,
                 );
-                context.read<PluginBloc>().add(AddRatingDataRequested(widget.docId, rate));
+                context.read<PluginBloc>().add(AddRatingDataRequested(rate));
               } on Exception catch (e) {
                 return showDialog<void>(
                   context: context,
                   builder: (BuildContext context) {
-                    return ErrorDialog(e.toString());
+                    return ErrorDialog(message: e.toString());
                   },
                 );
               }
@@ -171,6 +175,6 @@ class _RatingFormState extends State<RatingForm> {
         ],
       );
     }
-    return const ErrorDialog('You must log in to add rating.');
+    return const ErrorDialog(message: 'You must log in to add rating.');
   }
 }

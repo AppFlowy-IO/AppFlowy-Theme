@@ -27,8 +27,7 @@ class UserLoaded extends UserState {
 }
 
 class UserLoadFailed extends UserState {
-  UserLoadFailed({message})
-    : message = message.replaceAll('Exception: ', '');
+  const UserLoadFailed({required this.message});
 
   final String message;
   @override

@@ -3,11 +3,23 @@ import 'package:appflowy_theme_marketplace/src/plugins/domain/repositories/ratin
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 class SupabaseRatingsRepository implements RatingsRepository {
-  final sp = supabase.Supabase.instance.client;
+  SupabaseRatingsRepository({supabase.SupabaseClient? sp}) : sp = sp ?? supabase.Supabase.instance.client;
+  
+  final supabase.SupabaseClient sp;
 
   @override
-  Future<void> add(String pluginId, Rating rating) async {
-    await sp.from('ratings').upsert(Rating.insertRating(rating, pluginId).toJsonInsert());
+  Future<List<Rating>> getAll(String uid) async {
+    List<Rating> ratings = [];
+    final List data = await sp.from('ratings').select('*').eq('reviewer_id', uid);
+    ratings = data.map((rating) {
+      return Rating.fromJson(rating);
+    }).toList();
+    return ratings;
+  }
+  
+  @override
+  Future<void> add(Rating rating) async {
+    await sp.from('ratings').upsert(rating.toJsonInsert());
   }
 
   @override
@@ -33,8 +45,6 @@ class SupabaseRatingsRepository implements RatingsRepository {
 
   @override
   Future<void> update(Rating rating) async {
-    // TODO: implement update
     throw UnimplementedError();
   }
-  
 }

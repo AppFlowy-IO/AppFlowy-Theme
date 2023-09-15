@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../authentication/application/auth_bloc/auth_bloc.dart';
-import '../../../payment/application/payment_bloc/payment_bloc.dart';
 import '../../../widgets/ui_utils.dart';
 
 class RegisterBody extends StatelessWidget {
@@ -103,22 +102,14 @@ class RegisterBody extends StatelessWidget {
       child: Center(
         child: SizedBox(
             width: 300,
-            child: BlocConsumer<AuthBloc, AuthState>(
-              listener: (context, state) {
-                // if(state is RegistrationSuccess){
-                //   context.read<AuthBloc>().add(SignInRequested(_emailController.text, _passwordController.text));
-                // }
-                // else if(state is AuthenticateSuccess)
-                //   Navigator.of(context).pop();
-              },
+            child: BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
-                // if(true){
-                if (state is RegistrationSuccess || state is VerificationEmailSent || state is SendingEmail) {
+                if (state is RegistrationSuccess || state is EmailSent || state is SendingEmail) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 100),
-                      const Icon(Icons.check, size: IconSize.xxl),
+                      const Icon(Icons.check, size: IconSize.size_32),
                       const SizedBox(height: UiUtils.sizeM),
                       const Text(
                         'Thank you for registering, please check your email to verify the account',
@@ -134,14 +125,10 @@ class RegisterBody extends StatelessWidget {
                       const SizedBox(height: UiUtils.sizeM),
                       ElevatedButton(
                         onPressed: () {
+                          BlocProvider.of<AuthBloc>(context).add(ResetAuthStateRequested());
                           Navigator.of(context).pop();
                         },
                         child: const Text('Go to dashboard'),
-                      ),
-                      const SizedBox(height: UiUtils.sizeM),
-                      ElevatedButton( //TODO (a-wallen): migrate to supabase and apply to all  user
-                        onPressed: () async => BlocProvider.of<PaymentBloc>(context).add(CreateOnboardingLinkRequested('acct_1NcwLWBSgTfvRMoQ')),
-                        child: const Text('Become A seller'),
                       ),
                       const SizedBox(height: UiUtils.sizeM),
                     ],

@@ -4,20 +4,24 @@ const supUrl = Deno.env.get('_SUPABASE_URL') as string;
 const supKey = Deno.env.get('_SUPABASE_SERVICE_KEY') as string;
 const supabase = createClient(supUrl, supKey);
 
-const duplicateCheck = (data: any[] | null) : any[] => {
+const duplicateCheck = (data: any[] | null) => {
   if(data == null)
-    throw Error('data is null');
+    return null
   if(data.length == 0)
-    throw Error('User does not exist')
+    return null
   if(data.length > 1)
     throw Error('Duplicate user with the same email');
-  return data;
+  return data[0];
 }
 
 const findUserByMail = async (email:string) => {
-  const sellerData = await supabase.from('users').select('*').eq('email', email)
-  const data = sellerData.data
-  return duplicateCheck(data)[0];
+  const { data } = await supabase.from('users').select('*').eq('email', email)
+  return duplicateCheck(data);
+}
+
+const findUserByStripeId = async (stripeId:string) => {
+  const { data } = await supabase.from('users').select('*').eq('stripe_id', stripeId)
+  return duplicateCheck(data);
 }
 
 const updateUserByMail = async (email:string, stripeId:string) => {
@@ -28,35 +32,53 @@ const updateUserByMail = async (email:string, stripeId:string) => {
 }
 
 const newOrder = async(reqData:any) => {
-  console.log(reqData)
-  const customer_data = await supabase.from('users').select('email').eq('uid', reqData.metadata.customerUid)
-  let customers = customer_data.data
-  customers = duplicateCheck(customers)
-
+  const { data } = await supabase.from('users').select('email').eq('uid', reqData.metadata.customerUid)
+  const customer = duplicateCheck(data)
   const res = await supabase.from('orders').insert({
     'customer_id': reqData.metadata.customerUid,
     'plugin_id': reqData.metadata.productId,
     'order_detail': reqData,
     'product_name': reqData.metadata.productName,
-    'customer_email': customers[0].email,
+    'customer_email': customer.email,
   });
   return res;
 }
 
-// const newOrder = async(reqData) => {
-//   const customer_data = await supabase.from('users').select('email').eq('uid', reqData.metadata.customerUid)
-//   const res = await supabase.from('orders').insert({
-//     'customer_id': reqData.metadata.customerUid,
-//     'plugin_id': reqData.metadata.productId,
-//     'order_detail': reqData,
-//     'product_name': reqData.metadata.productName,
-//     'customer_email': customer_data.data[0].email,
-//   });
-//   return res;
-// }
+const findPurchasedOrder = async(customerUid: string, pluginId: string) => {
+  const { data } = await supabase
+  .from('orders')
+  .select('customer_id, plugin_id, product_name, customer_email')
+  .eq('customer_id', customerUid)
+  .eq('plugin_id', pluginId)
+  const res = duplicateCheck(data)
+  return res;
+}
+
+const findUploader = async(pluginId: string) => {
+  const { data } = await supabase
+    .from('files')
+    .select('uploader_name, uploader_id, uploader_email, name')
+    .eq('plugin_id', pluginId)
+  const res = duplicateCheck(data)
+  return res;
+}
+
+const getSignedUrl = async (sellerUid: string, pluginName: string) => {
+  const path = `${sellerUid}/${pluginName}`
+  const bucket = 'paid_plugins'
+  const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, 60)
+  if(error != null || error != undefined)
+    console.error(`error: ${error}`);
+  const downloadUrl: string | undefined = data?.signedUrl
+  return downloadUrl
+}
 
 export {
   findUserByMail,
+  findUserByStripeId,
   updateUserByMail,
   newOrder,
+  findPurchasedOrder,
+  findUploader,
+  getSignedUrl,
 }

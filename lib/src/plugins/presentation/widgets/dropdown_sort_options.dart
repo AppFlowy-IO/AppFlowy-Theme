@@ -41,7 +41,7 @@ class _DropDownSortOptionState extends State<DropDownSortOption> {
       ),
       onChanged: (String? value) {
         setState(() {
-          if(_selectedOption == value){
+          if (_selectedOption == value){
             _ascending = !_ascending;
           }
           else{

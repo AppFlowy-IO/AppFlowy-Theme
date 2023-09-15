@@ -4,42 +4,45 @@ import 'package:appflowy_theme_marketplace/src/serverless_api/supabase_api.dart'
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import '../../domain/models/user.dart';
 
 class StripePaymentRepository implements PaymentRepository {
+  final key = dotenv.env['ANON_KEY'] as String;
 
   @override
-  Future<Map<String, dynamic>> createAccountLink(String email) async {
+  Future<Map<String, dynamic>> createAccountLink(String stripeId) async {
     const url = SupabaseApi.createStripeAccountLink;
     final body = {
-      'email': email,
+      'stripeId': stripeId,
     };
     final response = await http.post(
       Uri.parse(url),
-      headers: {},
-      body: body,
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $key',
+      },
+      body: jsonEncode(body),
     );
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body) as Map<String, dynamic>;
       return responseData;
-    } else
-      throw Exception({
-        'exitCode': response.statusCode,
-      });
+    }
+    throw Exception({
+      'exitCode': response.statusCode,
+    });
   }
 
   @override
   Future<Map<String, dynamic>> createInvoice(Plugin product, User customer) async {
     const url = SupabaseApi.stripeCheckoutSession;
-    final key = dotenv.env['ANON_KEY'] as String;
     final body = {
       'name': product.name,
       'productId': product.id,
       'price': product.price.toString(),
       'uploaderEmail': product.seller.email,
       'uploaderName': product.seller.name,
-      'description': 'some custom description',
+      'description': product.description,
       'customerUid': customer.uid,
     };
     
@@ -56,7 +59,7 @@ class StripePaymentRepository implements PaymentRepository {
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body) as Map<String, dynamic>;
       return responseData;
-    } else
-      throw Exception({'exitCode': response.statusCode, 'message': response.body});
+    }
+    throw Exception({'exitCode': response.statusCode, 'message': response.body});
   }
 }

@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:appflowy_theme_marketplace/src/plugins/domain/models/plugin.dart';
 import 'package:appflowy_theme_marketplace/src/plugins/domain/models/rating.dart';
-import 'package:appflowy_theme_marketplace/src/plugins/domain/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as firebase;
 
 class FireStoreUtils {
@@ -11,24 +10,26 @@ class FireStoreUtils {
   
   static Future<void> uploadFileData(Plugin plugin) async {
     final querySnapShot = await _filesCollectionRef.where('name', isEqualTo: plugin.name).get();
-    if(querySnapShot.docs.isNotEmpty)
+    if (querySnapShot.docs.isNotEmpty) {
       throw Exception('Duplicate file name in document');
+    }
     await _filesCollectionRef.doc(plugin.pluginId).set(plugin.toJson());
   }
 
-  static Future<void> addRating(String docId, Rating rating) async {
+  static Future<void> addRating(Rating rating) async {
+    final docId = rating.pluginId;
     final firebase.DocumentReference ratingsDocumentRef = _filesCollectionRef.doc(docId);
     final firebase.CollectionReference ratingsCollectionRef = ratingsDocumentRef.collection('Ratings');
     final firebase.QuerySnapshot querySnapshot = await ratingsCollectionRef
       .where('reviewer.email', isEqualTo: rating.reviewer.email)
       .get();
-    if(querySnapshot.docs.isEmpty){
+    if (querySnapshot.docs.isEmpty){
       await ratingsCollectionRef.doc().set(rating.toJson());
       await _updateRating(docId);
     }
-    else if(querySnapshot.docs.length > 1)
+    else if (querySnapshot.docs.length > 1) {
       throw Exception('Duplicate ratings for the same user in this file');
-    else{
+    } else{
       await ratingsCollectionRef.doc(querySnapshot.docs[0].id).set(rating.toJson());
       await _updateRating(docId);
     }
@@ -76,12 +77,14 @@ class FireStoreUtils {
       countRatings = snapshot.docs.length;
       for(final rating in snapshot.docs){
         double? rate = rating['rating'];
-        if(rate == null)
+        if (rate == null) {
           continue;
+        }
         totalStars += rate;
       }
-      if (countRatings == 0) 
+      if (countRatings == 0) {
         return 1;
+      }
       return totalStars;
     } on Exception catch(_) {
       rethrow;
@@ -94,11 +97,11 @@ class FireStoreUtils {
     try{
       firebase.QuerySnapshot<Object?> snapshot = await _filesCollectionRef.orderBy('name').get();
       objectEventsList = snapshot.docs;
-      if(searchTerm != null || searchTerm == ''){
+      if (searchTerm != null || searchTerm == ''){
         objectEventsList = objectEventsList.where((item) => item['name'].toLowerCase().contains(searchTerm)).toList();
       }
       return objectEventsList;
-    } on Exception catch(e) {
+    } on Exception catch(_) {
       return [];
     }
   }
@@ -110,7 +113,7 @@ class FireStoreUtils {
         objectEventsList = event.docs;
       });
       return objectEventsList;
-    } on Exception catch(e) {
+    } on Exception catch(_) {
       return [];
     }
   }
@@ -122,7 +125,7 @@ class FireStoreUtils {
         objectEventsList = event.docs;
       });
       return objectEventsList;
-    } on Exception catch(e) {
+    } on Exception catch(_) {
       return [];
     }
   }

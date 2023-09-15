@@ -58,6 +58,8 @@ dependencies:
   uuid: ^3.0.7
   intl: ^0.18.1
   supabase_flutter: ^1.10.12
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
   
 dev_dependencies:
   flutter_test:
@@ -69,6 +71,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  build_runner: ^2.3.3
+  freezed: ^2.4.1
+  json_serializable: ^6.6.2
+  mockito: ^5.4.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -87,7 +93,7 @@ flutter:
     # - images/a_dot_burr.jpeg
     # - images/a_dot_ham.jpeg
     - assets/json-file-icon.jpg
-    - .env
+    - dotenv
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

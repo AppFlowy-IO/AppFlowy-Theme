@@ -48,5 +48,6 @@ app.*.map.json
 .env.default
 .env.local
 *.env
+dotenv
 
 node_modules

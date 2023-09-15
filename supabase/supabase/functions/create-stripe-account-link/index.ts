@@ -1,25 +1,19 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createAccountLink } from '../_utils/stripe.ts'
-
-console.log("Hello from Functions!")
+import { corsHeaders } from "../_utils/cors.ts";
 
 serve(async (req) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*', //TODO: IMPORTANT replace the allowed origin in production
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Max-Age': '3600',
-  };
-  const data = await req.json()
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  } 
+  
   try {
+    const data = await req.json()
+    console.log(data)
     const res = await createAccountLink(data.stripeId);
-    return new Response(JSON.stringify(res), { headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify(res), { status: 200, headers: corsHeaders })
   } catch (e) {
-    console.log(e);
-    return new Response(JSON.stringify(e), { status: 400 });
+    console.error(e);
+    return new Response(JSON.stringify(e), { status: 400, headers: corsHeaders });
   }
-  return new Response(
-    JSON.stringify(data),
-    { headers: { "Content-Type": "application/json" } },
-  )
 })

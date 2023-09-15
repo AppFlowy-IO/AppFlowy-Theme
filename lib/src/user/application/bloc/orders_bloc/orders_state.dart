@@ -26,9 +26,17 @@ class OrdersLoaded extends OrdersState {
   List<Object> get props => [];
 }
 
+class OrdersUrlCreated extends OrdersState {
+  const OrdersUrlCreated(this.url);
+  
+  final String url;
+
+  @override
+  List<Object> get props => [];
+}
+
 class OrdersLoadFailed extends OrdersState {
-  OrdersLoadFailed({message})
-    : message = message.replaceAll('Exception: ', '');
+  const OrdersLoadFailed({required this.message});
 
   final String message;
   @override

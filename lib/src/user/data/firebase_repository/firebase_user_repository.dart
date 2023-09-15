@@ -9,4 +9,14 @@ class FirebaseUserRepository implements UserRepository {
     User user = await UserHelper.getUserData(id);
     return user;
   }
+  
+  @override
+  Future<String?> add(String email) {
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<User> update(String stripeId) {
+    throw UnimplementedError();
+  }
 }

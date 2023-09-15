@@ -15,4 +15,9 @@ class FirebaseOrdersRepository implements OrdersRepository {
     final orders = await OrdersHelper.searchOrder(uid, searchTerm);
     return orders;
   }
+  
+  @override
+  Future<String> getDownloadUrl(String customerId, String productId) {
+    throw UnimplementedError();
+  }
 }

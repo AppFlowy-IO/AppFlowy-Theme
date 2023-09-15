@@ -27,6 +27,16 @@ class PluginReloading extends PluginState {
   List<Object?> get props => [];
 }
 
+class PluginUpdating extends PluginState {
+  @override
+  List<Object?> get props => [];
+}
+
+class PluginDeleting extends PluginState {
+  @override
+  List<Object?> get props => [];
+}
+
 class PluginFailed extends PluginState {
   PluginFailed({required message}) : message = message.replaceAll('Exception: ', '');
 

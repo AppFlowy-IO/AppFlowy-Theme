@@ -1,4 +1,3 @@
-// @freezed
 import 'package:appflowy_theme_marketplace/src/widgets/ui_utils.dart';
 
 class SupabaseAuthSignUpData {

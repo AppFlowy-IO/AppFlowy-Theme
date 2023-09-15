@@ -28,6 +28,16 @@ class SignOutRequested extends AuthEvent {
   SignOutRequested();
 }
 
+class ResetAuthStateRequested extends AuthEvent {
+  ResetAuthStateRequested();
+}
+
 class VerifyEmailRequested extends AuthEvent {
   VerifyEmailRequested();
+}
+
+class RecoverEmailRequested extends AuthEvent {
+  RecoverEmailRequested({required this.email});
+
+  final String email;
 }

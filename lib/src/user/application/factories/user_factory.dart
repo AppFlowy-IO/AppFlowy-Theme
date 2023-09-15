@@ -18,6 +18,14 @@ class UserFactory {
       name: user.name,
     );
   }
+  
+  static User fromAuth(auth.User user) {
+    return User(
+      uid: user.uid,
+      email: user.email ?? 'undefined',
+      name: user.name ?? 'undefined',
+    );
+  }
 
 
 }

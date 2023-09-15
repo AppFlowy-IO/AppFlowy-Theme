@@ -1,4 +1,3 @@
-// TODO: This domain should have its own understanding of what a user is.
 class User {
   final String uid;
   final String? name;

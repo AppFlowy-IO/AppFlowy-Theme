@@ -15,13 +15,13 @@ class PluginSearchBloc extends Bloc<PluginSearchEvent, PluginSearchState> {
       (PluginSearchRequested event, Emitter<PluginSearchState> emit) async {
         emit(SearchLoading());
         try {
-          if (event.searchTerm == '')
+          if (event.searchTerm == '') {
             emit(EmptySearch());
-          else {
+          } else {
             final filesList = await pluginRepository.list(event.searchTerm);
             emit(SearchSuccess(filesList: filesList));
           }
-        } on Exception catch (e) {
+        } on Exception catch (_) {
           emit(SearchFailed());
         }
       },

@@ -7,7 +7,7 @@ import '../../domain/models/user.dart';
 class FirebaseAuthenticationRepository implements AuthenticationRepository {
   firebase.User? currentUser;
   @override
-  Future<User?> register({required String emailAddress, required String password, String? name}) async {
+  Future<User?> register({required String emailAddress, required String password, String? name, required String key}) async {
     try {
       final firebase.UserCredential credential = await firebase.FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailAddress,
@@ -18,7 +18,6 @@ class FirebaseAuthenticationRepository implements AuthenticationRepository {
       if (firebaseUser != null) {
         await firebaseUser.updateDisplayName(name);
         uploader = User(uid: firebaseUser.uid, name: name, email: firebaseUser.email);
-        // await userRepository.add(uploader); //create account from stripe and add to db
         currentUser = firebaseUser;
       } else {
         throw Exception('There is no user data');
@@ -93,5 +92,10 @@ class FirebaseAuthenticationRepository implements AuthenticationRepository {
     (currentUser != null)
         ? await currentUser!.sendEmailVerification()
         : throw Exception('user is null');
+  }
+  
+  @override
+  Future<void> sendRecoveryEmail(String email) {
+    throw UnimplementedError();
   }
 }

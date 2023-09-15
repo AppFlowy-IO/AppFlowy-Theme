@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:appflowy_theme_marketplace/src/plugins/domain/models/pickedFile.dart';
+import 'package:appflowy_theme_marketplace/src/plugins/domain/models/picked_file.dart';
 import 'package:appflowy_theme_marketplace/src/plugins/domain/models/plugin.dart';
 import 'package:appflowy_theme_marketplace/src/plugins/domain/models/user.dart';
 import 'package:archive/archive.dart';
@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:profanity_filter/profanity_filter.dart';
 
+import '../../../../widgets/ui_utils.dart';
 import 'firestore_utils.dart';
 
 
@@ -18,31 +19,37 @@ class StorageUtils {
     Archive archive = ZipDecoder().decodeBytes(bytes);
 
     // guarantee there must be two files light and dark no more or less
-    if(archive.length != 2)
+    if (archive.length != 2) {
       return false;
+    }
     for (ArchiveFile file in archive) {
-      if(file.isFile){
+      if (file.isFile){
         final list = file.name.split('/');
-        if(!list[0].endsWith('.plugin'))    // first directory must end with .plugin
+        if (!list[0].endsWith(UiUtils.plugins)) {
           return false;
-        if(!(list[1].endsWith('.light.json') || list[1].endsWith('.dark.json')))
+        }
+        if (!(list[1].endsWith(UiUtils.lightJsonTheme) || list[1].endsWith(UiUtils.darkJsonTheme))) {
           return false;
+        }
       }
     }
     return true;
   }
 
   static Future<void> uploadFile(Uint8List? byteFile, String? fileName, User? user, double price) async {
-    if(byteFile != null && fileName != null && user != null){
+    if (byteFile != null && fileName != null && user != null){
       final filter = ProfanityFilter();
-      if(filter.hasProfanity(fileName.toLowerCase().substring(0, fileName.lastIndexOf('.'))))
+      if (filter.hasProfanity(fileName.toLowerCase().substring(0, fileName.lastIndexOf('.')))) {
         throw Exception('Cannot upload file that has profanity');
+      }
       
-      if(fileName.toLowerCase().substring(fileName.lastIndexOf('.')) != '.zip')
+      if (fileName.toLowerCase().substring(fileName.lastIndexOf('.')) != '.zip') {
         throw Exception('$fileName is not a .zip file');
+      }
 
-      if(!validateUploadFile(byteFile))
+      if (!validateUploadFile(byteFile)) {
         throw Exception('Zip does not meet the required format');
+      }
 
       String path = price == 0 ? 'public/${user.uid}' : 'private/${user.uid}';
       Reference storageReference = FirebaseStorage.instance.ref(path).child(fileName);
@@ -77,19 +84,11 @@ class StorageUtils {
       throw UnimplementedError('error from storage utils');
     }
   }
-  
-  //TODO: implement a way to get tempoerary link
-  static Future<String> getOneTimeUrl(String fileName, String userId) async {
-    Reference storageReference = FirebaseStorage.instance.ref('private/$fileName').child(fileName);
-    final Uint8List? bytes = await storageReference.getData();
-    return '';
-  }
-
   static Future<List<Reference>> listAllFiles(String? searchTerm) async {
     final storage = FirebaseStorage.instance;
     
     try{
-      if(searchTerm == null || searchTerm == ''){
+      if (searchTerm == null || searchTerm.isEmpty){
         final ListResult listResult = await storage.ref().listAll();
         return listResult.items;
       }

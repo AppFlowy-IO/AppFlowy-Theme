@@ -22,7 +22,7 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
         emit(OrdersLoaded(orders));
       } on Exception catch (e) {
         debugPrint('failed $e');
-        emit(OrdersLoadFailed(message: e));
+        emit(OrdersLoadFailed(message: e.toString()));
       }
     });
     on<FindOrderRequested>((event, emit) async {
@@ -33,7 +33,18 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
         emit(OrdersLoaded(orders));
       } on Exception catch (e) {
         debugPrint('failed $e');
-        emit(OrdersLoadFailed(message: e));
+        emit(OrdersLoadFailed(message: e.toString()));
+      }
+    });
+    on<GetDownloadUrlRequested>((event, emit) async {
+      emit(OrdersLoading());
+      await UiUtils.delayLoading();
+      try {
+        final url = await ordersRepository.getDownloadUrl(event.uid, event.productId);
+        emit(OrdersUrlCreated(url));
+      } on Exception catch (e) {
+        debugPrint('operation failed, message: $e');
+        emit(OrdersLoadFailed(message: e.toString()));
       }
     });
   }

@@ -16,7 +16,6 @@ class UserHelper {
     await _usersCollectionRef.doc(user.uid).set(user.toJson());
   }
 
-  //TODO: update user's info as there is any changes to the data
   static Future<void> updateUser(User user) async {
     try {
       firebase.DocumentSnapshot userDocument = await _getUserDocument(user.uid);

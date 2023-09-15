@@ -33,8 +33,7 @@ class RegistrationSuccess extends AuthState {
 }
 
 class RegistrationFailed extends AuthState {
-  RegistrationFailed({message})
-      : message = message.replaceAll('Exception: ', '');
+  const RegistrationFailed({required this.message});
 
   final String message;
 
@@ -44,8 +43,7 @@ class RegistrationFailed extends AuthState {
 }
 
 class AuthenticateFailed extends AuthState {
-  AuthenticateFailed({message})
-      : message = message.replaceAll('Exception: ', '');
+  const AuthenticateFailed({required this.message});
 
   final String message;
 
@@ -68,8 +66,8 @@ class SendingEmail extends AuthState{
   List<Object> get props => [];
 }
 
-class VerificationEmailSent extends AuthState{
-  const VerificationEmailSent();
+class EmailSent extends AuthState{
+  const EmailSent();
 
   @override
   List<Object> get props => [];

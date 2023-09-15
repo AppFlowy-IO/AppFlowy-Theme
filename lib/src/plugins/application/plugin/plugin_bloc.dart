@@ -6,7 +6,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-import '../../domain/models/pickedFile.dart';
+import '../../domain/models/picked_file.dart';
 import '../../domain/models/user.dart';
 
 part 'plugin_event.dart';
@@ -36,10 +36,27 @@ class PluginBloc extends Bloc<PluginEvent, PluginState> {
         emit(PluginFailed(message: e.toString()));
       }
     });
+    on<UpdatePluginRequested>((UpdatePluginRequested event, Emitter<PluginState> emit) async {
+      emit(PluginLoading());
+      try {
+        final picked = event.plugin;
+        final plugin = Plugin.upload(
+          pickedFile: picked,
+          name: picked.name,
+          uploader: event.user,
+          price: event.price,
+        );
+        await pluginRepository.add(plugin);
+        emit(PluginUpdated());
+      } on Exception catch (e) {
+        debugPrint(e.toString());
+        emit(PluginFailed(message: e.toString()));
+      }
+    });
     on<AddRatingDataRequested>((AddRatingDataRequested event, Emitter<PluginState> emit) async {
       emit(PluginLoading());
       try {
-        await ratingsRepository.add(event.pluginId, event.rating);
+        await ratingsRepository.add(event.rating);
         emit(PluginUpdated());
       } on Exception catch (e) {
         debugPrint(e.toString());
@@ -48,7 +65,7 @@ class PluginBloc extends Bloc<PluginEvent, PluginState> {
     });
     on<IncrementDownloadCountRequested>((IncrementDownloadCountRequested event, Emitter<PluginState> emit) async {
       try {
-        await pluginRepository.update(event.plugin);
+        await pluginRepository.updateDonloadCount(event.plugin);
       } on Exception catch (e) {
         debugPrint(e.toString());
       }

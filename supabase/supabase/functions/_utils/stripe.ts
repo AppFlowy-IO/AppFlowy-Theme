@@ -15,9 +15,10 @@ const cryptoProvider = Stripe.createSubtleCryptoProvider();
 const createAccount = async (email:string, accountType:string) => {
   const accountsList = await stripe.accounts.list()
   const duplicatesList = accountsList.data.filter((account:any) => account.email === email);
-  if (duplicatesList.length > 0)
-    console.log('has duplicate')  
-  // throw new Error('Account with the same email already exists.');
+  if (duplicatesList.length > 0){
+    console.error('Duplicate stripe accounts')  
+    throw new Error('Account with the same email already exists.');
+  }
   const customer = await stripe.accounts.create({ email: email, type: accountType });
   return customer;
 }
@@ -74,10 +75,25 @@ const createCheckoutSession = async (reqData:any, sellerData:any) => {
   return newCheckoutSession;
 }
 
+const getAccountInfo = async (accountId:any) => {
+  const accountData = await stripe.accounts.retrieve(accountId)
+  console.log(accountData)
+  return accountData;
+}
+
+const getAccountBalance = async (accountId:any) => {
+  const balance = await stripe.balance.retrieve({
+    stripeAccount: accountId,
+  });
+  return balance;
+}
+
 export {
   stripe,
+  cryptoProvider,
   createAccount,
   createAccountLink,
   createCheckoutSession,
-  cryptoProvider,
+  getAccountInfo,
+  getAccountBalance,
 }

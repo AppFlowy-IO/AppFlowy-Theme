@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:appflowy_theme_marketplace/src/user/domain/models/order.dart';
-import 'package:appflowy_theme_marketplace/src/user/presentation/orders_page/orders.dart';
+import 'package:appflowy_theme_marketplace/src/user/presentation/orders_page/orders_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as firebase;
 import 'package:intl/intl.dart';
 
@@ -41,7 +41,7 @@ class OrdersHelper {
     try{
       final firebase.QuerySnapshot querySnapshot = await ordersCollectionRef.get();
       objectEventsList = querySnapshot.docs;
-      if(searchTerm != null || searchTerm != ''){
+      if (searchTerm != null || searchTerm != ''){
         objectEventsList = objectEventsList.where((item) => item['metadata']['productName'].toLowerCase().contains(searchTerm)).toList();
       }
       List<Order> orders = objectEventsList.map((orderDocument) {

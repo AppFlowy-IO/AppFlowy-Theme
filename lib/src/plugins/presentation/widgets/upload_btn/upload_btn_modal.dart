@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../authentication/application/auth_bloc/auth_bloc.dart';
 import '../../../../widgets/snackbar_status.dart';
 import '../../../application/factories/user_factory.dart';
-import '../../../domain/models/pickedFile.dart';
+import '../../../domain/models/picked_file.dart';
 import '../../../domain/models/user.dart';
 
 class UploadButtonModal extends StatefulWidget {
@@ -36,10 +36,87 @@ class _UploadButtonModalState extends State<UploadButtonModal> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = context.read<AuthBloc>().state;
+    final TextField priceInput = TextField(
+      keyboardType: TextInputType.number,
+      textInputAction: TextInputAction.next,
+      style: const TextStyle(fontSize: UiUtils.sizeM),
+      decoration: const InputDecoration(
+        labelText: 'price',
+        labelStyle: TextStyle(fontSize: UiUtils.sizeM),
+        suffixIcon: Icon(Icons.attach_money, size: UiUtils.sizeXL),
+      ),
+      onChanged: (value) => setState(() {
+        if (value == '')
+          price = null;
+        else {
+          try {
+            price = double.parse(value);
+          } on Exception catch (_) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return const ErrorDialog(message: 'Invalid price value');
+              });
+            price = null;
+          }
+        }
+      }),
+    );
+
+    final OutlinedButton uploadButtonArea = OutlinedButton(
+      onPressed: () async {
+        try {
+          final pickedFile = await _pickFile();
+          setState(() {
+            plugin = pickedFile;
+          });
+        } on Exception catch(e) {
+          debugPrint(e.toString());
+        }
+      },
+      style: ButtonStyle(
+        foregroundColor: MaterialStateProperty.all(Colors.white),
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 200,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.folder,
+              size: UiUtils.sizeXL * 2,
+            ),
+            const SizedBox(height: UiUtils.sizeL),
+            Text(plugin != null ? plugin!.name : 'Select a zip file to upload'),
+          ],
+        ),
+      ),
+    );
+
+    final Row uploadedFileInfo = Row(
+      children: [
+        Expanded(
+          child: TextField(
+            enabled: false, // Disable input
+            controller: TextEditingController(text: plugin == null ? '' : plugin?.name),
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+            ),
+          ),
+        ),
+        const SizedBox(width: UiUtils.sizeL),
+        SizedBox(
+          width: 100,
+          child: priceInput,
+        ),
+      ],
+    );
+
+    final AuthState userState = context.read<AuthBloc>().state;
     late final User? user;
     if (userState is AuthenticateSuccess){
-      if(userState.user == null)
+      if (userState.user == null)
         throw Exception('user is undefined');
       user = UserFactory.fromAuth(userState.user!);
     }
@@ -54,79 +131,12 @@ class _UploadButtonModalState extends State<UploadButtonModal> {
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            } else {
+            } 
+            else {
               return Column(
                 children: [
-                  OutlinedButton(
-                    onPressed: () async {
-                      final pickedFile = await _pickFile();
-                      setState(() {
-                        plugin = pickedFile;
-                      });
-                    },
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
-                      // overlayColor: MaterialStateProperty.all(Colors.transparent),
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 200,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.folder,
-                            size: UiUtils.sizeXL * 2,
-                          ),
-                          const SizedBox(height: UiUtils.sizeL),
-                          Text(plugin != null ? plugin!.name : 'Select a zip file to upload'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          enabled: false, // Disable input
-                          controller: TextEditingController(text: plugin == null ? '' : plugin?.name),
-                          decoration: const InputDecoration(
-                            border: UnderlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: UiUtils.sizeL),
-                      SizedBox(
-                        width: 100,
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          textInputAction: TextInputAction.next,
-                          style: const TextStyle(fontSize: UiUtils.sizeM),
-                          decoration: const InputDecoration(
-                            labelText: 'price',
-                            labelStyle: TextStyle(fontSize: UiUtils.sizeM),
-                            suffixIcon: Icon(Icons.attach_money, size: UiUtils.sizeXL),
-                          ),
-                          onChanged: (value) => setState(() {
-                            if (value == '')
-                              price = null;
-                            else {
-                              try {
-                                price = double.parse(value);
-                              } on Exception catch (_) {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return const ErrorDialog('Invalid price value');
-                                    });
-                                price = null;
-                              }
-                            }
-                          }),
-                        ),
-                      ),
-                    ],
-                  ),
+                  uploadButtonArea,
+                  uploadedFileInfo,
                 ],
               );
             }
@@ -147,16 +157,16 @@ class _UploadButtonModalState extends State<UploadButtonModal> {
       ),
       actions: <Widget>[
         TextButton(
-          onPressed: () => Navigator.pop(context, 'Cancel'),
+          onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
         TextButton(
           onPressed: (plugin != null && user != null && price != null)
-              ? () {
-                  if (user == null) return;
-                  context.read<PluginBloc>().add(UploadDataRequested(user, plugin!, price!));
-                }
-              : null,
+          ? () {
+              if (user == null) return;
+              context.read<PluginBloc>().add(UploadDataRequested(user, plugin!, price!));
+            }
+          : null,
           child: const Text('Upload'),
         ),
       ],

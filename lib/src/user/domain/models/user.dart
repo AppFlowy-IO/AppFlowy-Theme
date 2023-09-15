@@ -3,7 +3,7 @@ class User {
   final String name;
   final String email;
   final String? stripeId;
-  final List purchasedItems;
+  final bool onboardCompleted;
 
   User({
     required this.uid,
@@ -11,20 +11,22 @@ class User {
     required this.email,
     this.stripeId,
     List? purchasedItems,
-  }) : purchasedItems = purchasedItems ?? [];
+    bool? onboardCompleted,
+  }) : onboardCompleted = onboardCompleted ?? false;
+       
 
   User.fromJson(Map<String, dynamic> object)
-      : uid = object['uid'] ?? '',
-        name = object['name'] ?? '',
-        email = object['email'] ?? '',
-        stripeId = object['stripeId'] ?? '',
-        purchasedItems = object['purchasedItems'] ?? [];
+      : uid = object['uid'],
+        name = object['name'],
+        email = object['email'],
+        stripeId = object['stripeId'],
+        onboardCompleted = object['onboardCompleted'] ?? false;
 
   Map<String, dynamic> toJson() => {
         'uid': uid,
         'name': name,
         'email': email,
         'stripeId': stripeId ?? '',
-        'purchasedItems': purchasedItems,
+        'onboardCompleted': onboardCompleted,
       };
 }
